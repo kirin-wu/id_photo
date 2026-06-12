@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>一寸照片生成器</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <section class="panel">
+        <div class="panel-head">
+          <h1>一寸照片生成器</h1>
+          <p>手机拍照，生成并导出电子照</p>
+        </div>
+
+        <div class="stage-wrap">
+          <div class="stage" id="cameraStage">
+            <video id="cameraVideo" playsinline autoplay muted></video>
+            <img id="capturePreview" alt="" hidden />
+            <div class="mask"></div>
+            <div class="guide">
+              <span>对齐头部与肩线</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="startCamera" class="btn primary">打开相机</button>
+          <button id="pickPhotoBtn" class="btn ghost" type="button">手机拍照</button>
+          <button id="choosePhotoBtn" class="btn ghost" type="button">相册选择</button>
+          <input id="fileInput" class="file-input" type="file" accept="image/*" capture="environment" />
+          <input id="albumInput" class="file-input" type="file" accept="image/*" />
+          <button id="captureBtn" class="btn">拍照</button>
+          <button id="resetBtn" class="btn ghost">重来</button>
+        </div>
+
+        <div class="status" id="statusText">先点“打开相机”，或直接用“手机拍照”。</div>
+      </section>
+
+      <section class="panel editor" id="editorPanel" hidden>
+        <div class="panel-head">
+          <h2>裁切调整</h2>
+          <p>拖动照片，滑动缩放，选好底色后生成</p>
+        </div>
+
+        <div class="editor-stage-wrap">
+          <div class="editor-stage" id="editorStage">
+            <img id="editorImage" alt="" />
+            <div class="mask"></div>
+            <div class="frame"></div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <label class="control">
+            <span>缩放</span>
+            <input id="zoomRange" type="range" min="1" max="2.6" step="0.01" value="1" />
+          </label>
+
+          <div class="swatches" aria-label="背景颜色">
+            <button class="swatch active" data-bg="#ffffff" style="background:#ffffff" aria-label="白底"></button>
+            <button class="swatch" data-bg="#f5f7fa" style="background:#f5f7fa" aria-label="浅灰底"></button>
+            <button class="swatch" data-bg="#1e6fff" style="background:#1e6fff" aria-label="蓝底"></button>
+            <button class="swatch" data-bg="#cf202f" style="background:#cf202f" aria-label="红底"></button>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="generateBtn" class="btn primary">生成一寸照</button>
+          <button id="generateStandardBtn" class="btn ghost">生成标准版</button>
+          <button id="downloadBtn" class="btn" disabled>导出图片</button>
+        </div>
+
+        <div class="result">
+          <canvas id="resultCanvas" width="600" height="840"></canvas>
+        </div>
+      </section>
+    </main>
+
+    <canvas id="workCanvas" hidden></canvas>
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>
