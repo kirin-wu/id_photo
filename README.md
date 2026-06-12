@@ -1,15 +1,18 @@
 # 一寸照片生成器
 
+基于 Vue 3 + Vite 的一寸照生成工具，支持拍照/导入、裁切、底色选择和 PNG 导出。
+
 ## 启动
 
 ```bash
+npm install
 npm run dev
 ```
 
 如果 3000 端口被占用：
 
 ```bash
-PORT=3002 npm run dev
+npm run dev -- --port 3002
 ```
 
 启动后电脑打开 `http://localhost:3002`，手机和电脑连同一个 Wi-Fi 后打开终端里打印的 `LAN` 地址，例如：
@@ -28,3 +31,13 @@ http://192.168.3.7:3002
 6. 点“导出图片”下载 PNG。
 
 当前版本优先保证本地快速可用：支持拍照/导入、裁切、换画布底色、一寸电子照导出。自动抠背景可以后续接入模型服务增强。
+
+## Cloudflare Pages
+
+Vue 3 改造后按 Vite 项目部署：
+
+```text
+Framework preset: Vue 或 Vite
+Build command: npm run build
+Build output directory: dist
+```
