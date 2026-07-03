@@ -1,0 +1,4 @@
+allowBuilds:
+  esbuild: true
+overrides:
+  entities: 8.0.0
