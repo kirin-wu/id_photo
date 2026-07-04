@@ -376,3 +376,205 @@ onBeforeUnmount(() => {
   window.removeEventListener("resize", handleResize);
 });
 </script>
+
+<style scoped>
+.app {
+  width: min(980px, 100%);
+  margin: 0 auto;
+  display: grid;
+  gap: 16px;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  padding: 16px;
+}
+
+.panel-head h1,
+.panel-head h2 {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+.panel-head p {
+  margin: 6px 0 0;
+  color: var(--muted);
+}
+
+.stage-wrap,
+.editor-stage-wrap {
+  margin-top: 14px;
+  display: flex;
+  justify-content: center;
+}
+
+.stage,
+.editor-stage {
+  width: min(100%, 360px);
+  aspect-ratio: 5 / 7;
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #dfe7f1;
+  border: 1px solid #c7d0db;
+  touch-action: none;
+}
+
+.stage video,
+.stage img,
+.editor-stage img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.editor-stage img {
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.mask {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.36),
+      rgba(0, 0, 0, 0.12) 14%,
+      rgba(0, 0, 0, 0) 24%,
+      rgba(0, 0, 0, 0) 76%,
+      rgba(0, 0, 0, 0.12) 86%,
+      rgba(0, 0, 0, 0.36)
+    ),
+    linear-gradient(to right, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0) 16%, rgba(0, 0, 0, 0) 84%, rgba(0, 0, 0, 0.18));
+  mix-blend-mode: multiply;
+}
+
+.guide,
+.frame {
+  position: absolute;
+  inset: 14px;
+  border-radius: 8px;
+  border: 2px dashed rgba(255, 255, 255, 0.92);
+  pointer-events: none;
+}
+
+.guide {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 10px;
+  border: none;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  font-weight: 600;
+}
+
+.actions,
+.controls,
+.swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-top: 14px;
+}
+
+.btn {
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--text);
+  border-radius: 8px;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+.btn.primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+.btn.ghost {
+  background: #f8fafc;
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.file-input {
+  position: fixed;
+  inset: auto auto 0 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0.01;
+  pointer-events: none;
+}
+
+.status {
+  margin-top: 12px;
+  color: var(--muted);
+}
+
+.control {
+  display: grid;
+  gap: 8px;
+  min-width: min(100%, 360px);
+}
+
+.control input[type="range"] {
+  width: 100%;
+}
+
+.swatches {
+  gap: 8px;
+}
+
+.swatch {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.12);
+}
+
+.swatch.active {
+  border-color: #111827;
+}
+
+.result {
+  margin-top: 14px;
+  display: grid;
+  justify-content: center;
+}
+
+.result canvas {
+  width: min(100%, 300px);
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+}
+
+@media (max-width: 640px) {
+  .panel {
+    padding: 14px;
+  }
+
+  .stage,
+  .editor-stage {
+    width: 100%;
+  }
+}
+</style>

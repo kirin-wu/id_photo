@@ -507,7 +507,8 @@ onBeforeUnmount(() => {
     overflow: hidden;
   }
 
-  body.a4-route .top-nav,
+  body.a4-route .app-sidebar,
+  body.a4-route .workspace-topbar,
   body.a4-route .a4-composer {
     display: none !important;
   }

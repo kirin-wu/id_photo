@@ -1,75 +1,49 @@
 <template>
-  <div class="route-shell">
-    <aside class="side-tabs">
-      <div class="side-brand">
-        <strong>证件照工具</strong>
-        <span>本地图片处理</span>
-      </div>
+  <div class="app-shell">
+    <!-- 工具页面：显示返回栏 -->
+    <header v-if="activeTool" class="tool-topbar">
+      <button class="back-btn" type="button" @click="go('/')">
+        ← 工具总览
+      </button>
+      <span class="tool-title">{{ activeTool.title }}</span>
+    </header>
 
-      <nav class="tab-list" aria-label="功能切换" role="tablist" aria-orientation="vertical">
-        <button
-          v-for="feature in features"
-          :key="feature.path"
-          class="side-tab"
-          :class="{ active: currentPath === feature.path }"
-          type="button"
-          role="tab"
-          :aria-selected="currentPath === feature.path"
-          @click="go(feature.path)"
-        >
-          <span class="tab-mark">{{ feature.mark }}</span>
-          <span class="tab-copy">
-            <strong>{{ feature.label }}</strong>
-            <small>{{ feature.description }}</small>
-          </span>
-        </button>
-      </nav>
-    </aside>
-
-    <section class="route-main" role="tabpanel">
-      <component :is="activeFeature.component" />
-    </section>
+    <HomeView
+      v-if="!activeTool"
+      :tools="tools"
+      :categories="toolCategories"
+      @navigate="go"
+    />
+    <component :is="activeTool.component" v-else />
   </div>
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
-import A4ImageComposerView from "./views/A4ImageComposerView.vue";
-import IdPhotoView from "./views/IdPhotoView.vue";
+import { computed, onBeforeUnmount, onMounted, ref, watchEffect } from "vue";
+import HomeView from "./views/HomeView.vue";
+import { findToolByPath, normalizePath, toolCategories, tools } from "./tools/registry";
 
-const features = [
-  {
-    path: "/",
-    label: "一寸照",
-    description: "拍照、裁切、换底色",
-    mark: "1",
-    component: IdPhotoView,
-  },
-  {
-    path: "/a4-image",
-    label: "A4 合图",
-    description: "双图排版、打印导出",
-    mark: "A4",
-    component: A4ImageComposerView,
-  },
-];
+/* ---------- 路由 ---------- */
 
 const currentPath = ref(normalizePath(window.location.pathname));
-const activeFeature = computed(() => features.find((feature) => feature.path === currentPath.value) ?? features[0]);
-
-function normalizePath(pathname) {
-  return pathname.replace(/\/+$/, "") || "/";
-}
+const activeTool = computed(() => findToolByPath(currentPath.value));
 
 function syncPath() {
   currentPath.value = normalizePath(window.location.pathname);
 }
 
 function go(pathname) {
-  if (normalizePath(window.location.pathname) === pathname) return;
-  window.history.pushState({}, "", pathname);
-  syncPath();
+  const nextPath = normalizePath(pathname);
+  if (normalizePath(window.location.pathname) !== nextPath) {
+    window.history.pushState({}, "", nextPath);
+  }
+  currentPath.value = nextPath;
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
+
+watchEffect(() => {
+  document.title = activeTool.value ? `${activeTool.value.title} - 办公工具箱` : "办公工具箱";
+});
 
 onMounted(() => {
   window.addEventListener("popstate", syncPath);
@@ -80,133 +54,53 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style scoped>
-.route-shell {
-  width: min(1220px, 100%);
-  min-height: calc(100vh - 36px);
+<style>
+/* 全局 app 外壳样式 — 不 scoped，让子组件可以继承 */
+.app-shell {
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
+  min-height: calc(100vh - 32px);
   display: grid;
-  grid-template-columns: 220px minmax(0, 1fr);
   gap: 16px;
-  align-items: start;
+  padding: 0 24px;
 }
 
-.side-tabs {
-  position: sticky;
-  top: 18px;
-  display: grid;
-  gap: 14px;
-  padding: 14px;
+.tool-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--panel);
   border: 1px solid var(--line);
-  border-radius: 12px;
-  background: #fff;
+  border-radius: 8px;
   box-shadow: var(--shadow);
 }
 
-.side-brand {
-  display: grid;
-  gap: 3px;
-  padding: 2px 2px 8px;
-  border-bottom: 1px solid var(--line);
-}
-
-.side-brand strong {
-  font-size: 18px;
-  line-height: 1.2;
-}
-
-.side-brand span,
-.side-tab small {
-  color: var(--muted);
-}
-
-.tab-list {
-  display: grid;
-  gap: 8px;
-}
-
-.side-tab {
-  width: 100%;
-  min-height: 66px;
-  display: grid;
-  grid-template-columns: 38px minmax(0, 1fr);
-  align-items: center;
-  gap: 10px;
-  padding: 10px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: #f8fafc;
-  color: var(--text);
-  text-align: left;
-  cursor: pointer;
-}
-
-.side-tab:hover {
-  border-color: #b8c4d6;
-}
-
-.side-tab.active {
-  border-color: var(--primary);
-  background: #eef4ff;
-}
-
-.tab-mark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 8px;
-  background: #e2e8f0;
-  color: var(--text);
+.back-btn {
+  border: 0;
+  background: transparent;
+  color: var(--primary);
   font-weight: 700;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 6px;
 }
 
-.side-tab.active .tab-mark {
-  background: var(--primary);
-  color: #fff;
+.back-btn:hover {
+  background: #edf4ff;
 }
 
-.tab-copy {
-  min-width: 0;
-  display: grid;
-  gap: 2px;
+.tool-title {
+  font-weight: 700;
+  font-size: 16px;
 }
 
-.tab-copy strong,
-.tab-copy small {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.route-main {
-  min-width: 0;
-}
-
-@media (max-width: 640px) {
-  .route-shell {
-    min-height: 100vh;
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  .side-tabs {
-    position: static;
-  }
-
-  .tab-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .side-tab {
-    min-height: 58px;
-    grid-template-columns: 32px minmax(0, 1fr);
-  }
-
-  .tab-mark {
-    width: 32px;
-    height: 32px;
+@media (max-width: 760px) {
+  .tool-topbar {
+    flex-wrap: wrap;
+    gap: 8px;
   }
 }
 </style>
