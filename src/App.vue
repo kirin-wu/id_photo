@@ -66,6 +66,13 @@ onBeforeUnmount(() => {
   padding: 0 24px;
 }
 
+@media (max-width: 640px) {
+  .app-shell {
+    padding: 0 12px;
+    gap: 12px;
+  }
+}
+
 .tool-topbar {
   display: flex;
   align-items: center;

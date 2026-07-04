@@ -526,7 +526,38 @@ watch(convMode, () => {
 .error-panel { border-color: #fecaca; background: #fef2f2; color: #dc2626; }
 .error-panel p { margin: 0; }
 
-@media (max-width: 640px) { .form-grid { grid-template-columns: 1fr; } }
+@media (max-width: 640px) {
+  .form-grid { grid-template-columns: 1fr; }
+
+  .panel { padding: 14px; }
+  .panel-head h2, .panel-head h1 { font-size: 17px; }
+
+  .upload-row { flex-wrap: wrap; }
+  .upload-status { width: 100%; }
+
+  .preview-head { flex-wrap: wrap; }
+
+  .json-preview { font-size: 11px; padding: 10px; }
+
+  .actions { flex-direction: column; }
+  .actions .btn { width: 100%; }
+
+  .radio-row { flex-direction: column; }
+
+  .servo-card { padding: 12px; }
+
+  .card-header { flex-wrap: wrap; gap: 8px; }
+}
+
+@media (max-width: 900px) {
+  .tool-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .tool-sidebar {
+    position: static;
+  }
+}
 
 /* 进制转换面板 */
 .converter-panel h3 {
@@ -608,15 +639,6 @@ watch(convMode, () => {
   line-height: 1.6;
 }
 
-@media (max-width: 900px) {
-  .tool-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .tool-sidebar {
-    position: static;
-  }
-}
 </style>
 
 <style>
@@ -625,6 +647,7 @@ watch(convMode, () => {
   top: 24px;
   left: 50%;
   transform: translateX(-50%);
+  max-width: calc(100vw - 32px);
   padding: 10px 24px;
   border-radius: 8px;
   background: #1f2937;
@@ -635,6 +658,8 @@ watch(convMode, () => {
   z-index: 9999;
   animation: toast-in 0.25s ease;
   pointer-events: none;
+  white-space: nowrap;
+  text-align: center;
 }
 
 @keyframes toast-in {

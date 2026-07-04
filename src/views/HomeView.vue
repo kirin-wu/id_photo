@@ -91,12 +91,32 @@ defineEmits(["navigate"]);
 }
 
 @media (max-width: 640px) {
+  .home-view {
+    padding-top: 24px;
+  }
+
+  .title {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+
   .tool-grid {
     grid-template-columns: 1fr;
+    gap: 10px;
   }
 
   .tool-card {
-    padding: 22px 18px;
+    padding: 18px 16px;
+  }
+
+  .card-mark {
+    width: 40px;
+    height: 40px;
+    font-size: 15px;
+  }
+
+  .card-name {
+    font-size: 15px;
   }
 }
 </style>
