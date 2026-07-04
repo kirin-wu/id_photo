@@ -101,7 +101,12 @@
           <h2>JSON 预览</h2>
           <span class="toggle-icon">{{ showPreview ? '▾' : '▸' }}</span>
         </div>
-        <button class="btn-sm" type="button" @click.stop="copyJson">复制</button>
+        <button class="btn-sm" type="button" @click.stop="copyJson" :disabled="btnLoading">
+          {{ btnLoading === 'copy' ? '复制中…' : '复制' }}
+        </button>
+        <button class="btn-sm" type="button" @click.stop="downloadJson" :disabled="btnLoading">
+          {{ btnLoading === 'export' ? '导出中…' : '导出' }}
+        </button>
       </div>
       <pre v-if="showPreview" class="json-preview"><code>{{ generatedJson }}</code></pre>
     </section>
@@ -219,6 +224,7 @@ function parseXmlForServo(xmlText) {
 const showPreview = ref(true);
 const showParamRef = ref(true);
 const errorMsg = ref("");
+const btnLoading = ref(null); // 'copy' | 'export' | null
 const toast = reactive({ visible: false, message: "" });
 const fileInputs = ref([]);
 
@@ -334,18 +340,25 @@ const generatedJson = computed(() => {
 });
 
 function downloadJson() {
-  const blob = new Blob([generatedJson.value], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "slaveTypeLib.json";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  btnLoading.value = "export";
+  // 用微任务确保 UI 更新后再执行
+  setTimeout(() => {
+    const blob = new Blob([generatedJson.value], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "slaveTypeLib.json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    btnLoading.value = null;
+  }, 100);
 }
 
 async function copyJson() {
+  btnLoading.value = "copy";
+  await new Promise((r) => setTimeout(r, 100));
   try {
     await navigator.clipboard.writeText(generatedJson.value);
   } catch {
@@ -356,6 +369,7 @@ async function copyJson() {
     document.execCommand("copy");
     document.body.removeChild(ta);
   }
+  btnLoading.value = null;
   showToast("复制成功");
 }
 
