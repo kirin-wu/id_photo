@@ -2,8 +2,8 @@
   <main class="app">
     <section class="panel">
       <div class="panel-head">
-        <h1>一寸照片生成器</h1>
-        <p>手机拍照，生成并导出电子照</p>
+        <h1>证件照生成器</h1>
+        <p>手机拍照，选规格，生成并导出电子照</p>
       </div>
 
       <div class="stage-wrap">
@@ -72,9 +72,20 @@
         </div>
       </div>
 
+      <div class="spec-row" aria-label="照片规格">
+        <button
+          v-for="s in photoSpecs"
+          :key="s.value"
+          class="spec-btn"
+          :class="{ active: photoSpec === s.value }"
+          type="button"
+          @click="photoSpec = s.value"
+        >{{ s.label }}</button>
+      </div>
+
       <div class="actions">
-        <button class="btn primary" type="button" @click="generateHighRes">生成一寸照</button>
-        <button class="btn ghost" type="button" @click="generateStandard">生成标准版</button>
+        <button class="btn primary" type="button" @click="generateCurrent('hd')">生成{{ currentSpec.label }}照</button>
+        <button class="btn ghost" type="button" @click="generateCurrent('standard')">生成标准版</button>
         <button class="btn" type="button" :disabled="!resultReady" @click="downloadResult">导出图片</button>
       </div>
 
@@ -90,8 +101,12 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from "vue";
 
-const HIGH_RES_SIZE = { width: 600, height: 840, label: "高清版 600x840", filename: "one-inch-photo-hd.png" };
-const STANDARD_SIZE = { width: 295, height: 413, label: "标准版 295x413", filename: "one-inch-photo-standard.png" };
+const photoSpecs = [
+  { value: "1inch", label: "一寸", hd: { width: 600, height: 840, label: "高清版 600×840", filename: "one-inch-photo-hd.png" }, standard: { width: 295, height: 413, label: "标准版 295×413", filename: "one-inch-photo-standard.png" } },
+  { value: "2inch", label: "二寸", hd: { width: 826, height: 1158, label: "高清版 826×1158", filename: "two-inch-photo-hd.png" }, standard: { width: 413, height: 579, label: "标准版 413×579", filename: "two-inch-photo-standard.png" } },
+];
+const photoSpec = ref("1inch");
+const currentSpec = computed(() => photoSpecs.find((s) => s.value === photoSpec.value));
 
 const bgOptions = [
   { label: "白底", value: "#ffffff" },
@@ -119,7 +134,7 @@ const bg = ref("#ffffff");
 const baseScale = ref(1);
 const scale = ref(1);
 const resultReady = ref(false);
-const resultSize = ref(HIGH_RES_SIZE);
+const resultSize = ref(currentSpec.value.hd);
 
 const position = reactive({
   offsetX: 0,
@@ -234,7 +249,7 @@ function renderEditor() {
   imageBox.top = rect.height / 2 - displayHeight / 2 + position.offsetY;
 }
 
-function updateResult(size = HIGH_RES_SIZE) {
+function updateResult(size = currentSpec.value.hd) {
   if (!sourceImage.value || !editorStage.value || !resultCanvas.value) return;
 
   const canvas = resultCanvas.value;
@@ -345,14 +360,10 @@ function endDrag(event) {
   position.activePointerId = null;
 }
 
-function generateHighRes() {
-  updateResult(HIGH_RES_SIZE);
-  setStatus("已生成高清版 600x840，下面可以直接导出。");
-}
-
-function generateStandard() {
-  updateResult(STANDARD_SIZE);
-  setStatus("已生成标准版 295x413，下面可以直接导出。");
+function generateCurrent(quality) {
+  const size = quality === "hd" ? currentSpec.value.hd : currentSpec.value.standard;
+  updateResult(size);
+  setStatus(`已生成${currentSpec.value.label} ${size.label}，下面可以直接导出。`);
 }
 
 function downloadResult() {
@@ -519,6 +530,29 @@ onBeforeUnmount(() => {
   height: 1px;
   opacity: 0.01;
   pointer-events: none;
+}
+
+.spec-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.spec-btn {
+  padding: 6px 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.spec-btn.active {
+  border-color: var(--primary);
+  background: #eef2ff;
+  color: var(--primary);
 }
 
 .status {

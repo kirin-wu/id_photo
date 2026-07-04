@@ -10,7 +10,9 @@
         type="button"
         @click="$emit('navigate', tool.path)"
       >
-        <span class="card-mark">{{ tool.mark }}</span>
+        <span class="card-icon">
+          <component :is="iconMap[tool.icon]" :size="24" />
+        </span>
         <span class="card-name">{{ tool.title }}</span>
         <span class="card-desc">{{ tool.description }}</span>
       </button>
@@ -19,6 +21,14 @@
 </template>
 
 <script setup>
+import { Camera, Cpu, Images } from "lucide-vue-next";
+
+const iconMap = {
+  camera: Camera,
+  cpu: Cpu,
+  images: Images,
+};
+
 defineProps({
   tools: { type: Array, required: true },
   categories: { type: Array, required: true },
@@ -65,7 +75,7 @@ defineEmits(["navigate"]);
   border-color: transparent;
 }
 
-.card-mark {
+.card-icon {
   width: 48px;
   height: 48px;
   display: flex;
@@ -74,8 +84,6 @@ defineEmits(["navigate"]);
   border-radius: 14px;
   background: linear-gradient(135deg, #eef2ff, #e0e7ff);
   color: var(--primary);
-  font-weight: 800;
-  font-size: 18px;
 }
 
 .card-name {
@@ -109,10 +117,9 @@ defineEmits(["navigate"]);
     padding: 18px 16px;
   }
 
-  .card-mark {
+  .card-icon {
     width: 40px;
     height: 40px;
-    font-size: 15px;
   }
 
   .card-name {
