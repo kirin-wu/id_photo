@@ -11,6 +11,9 @@ importers:
 
   .:
     dependencies:
+      lucide-vue-next:
+        specifier: ^0.577.0
+        version: 0.577.0(vue@3.5.39)
       vue:
         specifier: ^3.5.16
         version: 3.5.39
@@ -379,6 +382,11 @@ packages:
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
 
+  lucide-vue-next@0.577.0:
+    resolution: {integrity: sha512-py05bAfv9SHVJqscbiOnjcnLlEmOffA58a+7XhZuFxrs6txe1E8VoR1ngWGTYO+9aVKABAz8l3ee3PqiQN9QPA==}
+    peerDependencies:
+      vue: '>=3.0.1'
+
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
 
@@ -698,6 +706,10 @@ snapshots:
 
   fsevents@2.3.3:
     optional: true
+
+  lucide-vue-next@0.577.0(vue@3.5.39):
+    dependencies:
+      vue: 3.5.39
 
   magic-string@0.30.21:
     dependencies:

@@ -1,6 +1,6 @@
 import A4ImageTool from "./a4-image/A4ImageTool.vue";
+import DeviceIdentifyTool from "./device-identify/DeviceIdentifyTool.vue";
 import IdPhotoTool from "./id-photo/IdPhotoTool.vue";
-import ServoIdentifyTool from "./servo-identify/ServoIdentifyTool.vue";
 
 export const toolCategories = [];
 
@@ -16,14 +16,14 @@ export const tools = [
     component: IdPhotoTool,
   },
   {
-    id: "servo-identify",
-    title: "伺服识别",
-    navLabel: "伺服识别",
-    description: "上传 XML 或手动填写，生成伺服识别 JSON 文件。",
+    id: "device-identify",
+    title: "设备识别",
+    navLabel: "设备识别",
+    description: "上传 XML / ESI 文件或手动填写，生成伺服与 IO 板 slaveTypeLib JSON。",
     category: "device",
     icon: "cpu",
-    path: "/tools/servo-identify",
-    component: ServoIdentifyTool,
+    path: "/tools/device-identify",
+    component: DeviceIdentifyTool,
   },
   {
     id: "a4-image",
