@@ -67,6 +67,7 @@
                     <select v-model.number="entry.clearEncodeMode">
                       <option :value="0">0 - 不清除</option>
                       <option :value="1">1 - 清除</option>
+                      <option :value="2">2</option>
                     </select>
                   </label>
                   <label class="field">
