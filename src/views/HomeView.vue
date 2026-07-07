@@ -21,12 +21,13 @@
 </template>
 
 <script setup>
-import { Camera, Cpu, Images } from "lucide-vue-next";
+import { Camera, Cpu, Images, Search } from "lucide-vue-next";
 
 const iconMap = {
   camera: Camera,
   cpu: Cpu,
   images: Images,
+  search: Search,
 };
 
 defineProps({

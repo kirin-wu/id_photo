@@ -1,5 +1,6 @@
 import A4ImageTool from "./a4-image/A4ImageTool.vue";
 import DeviceIdentifyTool from "./device-identify/DeviceIdentifyTool.vue";
+import EniHelperTool from "./eni-helper/EniHelperTool.vue";
 import IdPhotoTool from "./id-photo/IdPhotoTool.vue";
 
 export const toolCategories = [];
@@ -35,6 +36,17 @@ export const tools = [
     path: "/tools/a4-image",
     aliases: ["/a4-image"],
     component: A4ImageTool,
+  },
+  {
+    id: "eni-helper",
+    title: "ENI 查询下载助手",
+    navLabel: "ENI 查询下载助手",
+    description: "内嵌 ENI 查询下载服务，保留外部打开入口。",
+    category: "download",
+    icon: "search",
+    path: "/tools/eni-helper",
+    aliases: ["/eni-helper"],
+    component: EniHelperTool,
   },
 ];
 
