@@ -1,4 +1,5 @@
 import A4ImageTool from "./a4-image/A4ImageTool.vue";
+import BaseConverterTool from "./base-converter/BaseConverterTool.vue";
 import DeviceIdentifyTool from "./device-identify/DeviceIdentifyTool.vue";
 import EniHelperTool from "./eni-helper/EniHelperTool.vue";
 import GearRatioTool from "./gear-ratio/GearRatioTool.vue";
@@ -60,6 +61,17 @@ export const tools = [
     path: "/tools/gear-ratio",
     aliases: ["/gear-ratio"],
     component: GearRatioTool,
+  },
+  {
+    id: "base-converter",
+    title: "进制转化",
+    navLabel: "进制转化",
+    description: "输入二进制、十进制或十六进制，快速得到常见进制结果。",
+    category: "number",
+    icon: "binary",
+    path: "/tools/base-converter",
+    aliases: ["/base-converter"],
+    component: BaseConverterTool,
   },
 ];
 
