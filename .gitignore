@@ -1,5 +1,6 @@
 node_modules
 dist
+.vite-cache
 .npm-cache
 .pnpm-store
 .vite-dev-*.log

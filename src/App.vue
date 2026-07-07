@@ -78,6 +78,7 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  height: 64px;
   padding: 12px 16px;
   background: var(--panel);
   border: 1px solid var(--line);

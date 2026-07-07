@@ -24,7 +24,6 @@
 
     <section class="eni-frame-panel">
       <iframe
-        v-if="!timedOut"
         :key="frameKey"
         class="eni-frame"
         :src="targetUrl"
@@ -33,13 +32,19 @@
         @load="handleFrameLoad"
       ></iframe>
 
-      <div v-if="timedOut" class="eni-fallback">
-        <h2>加载超时</h2>
-        <p>服务可能暂时无法在内嵌窗口中响应。</p>
-        <a class="eni-primary-link" :href="targetUrl" target="_blank" rel="noopener noreferrer">
-          <ExternalLink :size="18" />
-          <span>打开 ENI 查询下载助手</span>
-        </a>
+      <div v-if="!frameReady" class="eni-loading" aria-live="polite">
+        <div class="eni-loading-card">
+          <div class="eni-loader" aria-hidden="true">
+            <span></span>
+          </div>
+          <div class="eni-loading-copy">
+            <strong>{{ loadingTitle }}</strong>
+            <p>{{ loadingMessage }}</p>
+          </div>
+          <div class="eni-loading-bar" aria-hidden="true">
+            <span></span>
+          </div>
+        </div>
       </div>
     </section>
   </main>
@@ -53,31 +58,46 @@ const targetUrl = "https://eni.renhe.fun/";
 
 const frameKey = ref(0);
 const frameReady = ref(false);
-const timedOut = ref(false);
+const redirecting = ref(false);
 let loadTimer = null;
 
 const statusText = computed(() => {
+  if (redirecting.value) {
+    return "跳转中";
+  }
   return frameReady.value ? "已连接" : "加载中";
+});
+
+const loadingTitle = computed(() => {
+  return redirecting.value ? "正在跳转到 ENI 服务" : "正在连接 ENI 服务";
+});
+
+const loadingMessage = computed(() => {
+  return redirecting.value
+    ? "内嵌加载超时，正在使用当前窗口打开。"
+    : "请稍候，若 6 秒内未响应将自动跳转。";
 });
 
 function startLoadTimer() {
   clearTimeout(loadTimer);
-  timedOut.value = false;
+  redirecting.value = false;
   loadTimer = setTimeout(() => {
     if (!frameReady.value) {
-      timedOut.value = true;
+      redirecting.value = true;
+      window.location.assign(targetUrl);
     }
   }, 6000);
 }
 
 function handleFrameLoad() {
   frameReady.value = true;
-  timedOut.value = false;
+  redirecting.value = false;
   clearTimeout(loadTimer);
 }
 
 function reloadFrame() {
   frameReady.value = false;
+  redirecting.value = false;
   frameKey.value += 1;
   startLoadTimer();
 }
@@ -155,8 +175,7 @@ onBeforeUnmount(() => {
 }
 
 .eni-icon-btn,
-.eni-link-btn,
-.eni-primary-link {
+.eni-link-btn {
   min-height: 38px;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -173,8 +192,7 @@ onBeforeUnmount(() => {
   place-items: center;
 }
 
-.eni-link-btn,
-.eni-primary-link {
+.eni-link-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -207,39 +225,118 @@ onBeforeUnmount(() => {
   background: #fff;
 }
 
-.eni-fallback {
+.eni-loading {
   position: absolute;
   inset: 0;
   display: grid;
   place-content: center;
-  justify-items: center;
-  gap: 12px;
   padding: 24px;
-  background: rgba(248, 250, 252, 0.96);
+  background:
+    radial-gradient(circle at 30% 20%, rgba(59, 130, 246, 0.16), transparent 34%),
+    radial-gradient(circle at 72% 70%, rgba(20, 184, 166, 0.14), transparent 30%),
+    linear-gradient(135deg, rgba(248, 250, 252, 0.96), rgba(255, 255, 255, 0.9));
+  backdrop-filter: blur(8px);
   text-align: center;
 }
 
-.eni-fallback h2 {
-  margin: 0;
-  font-size: 20px;
+.eni-loading-card {
+  width: min(380px, calc(100vw - 64px));
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  padding: 28px;
+  border: 1px solid rgba(203, 213, 225, 0.78);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 18px 60px rgba(15, 23, 42, 0.14);
 }
 
-.eni-fallback p {
-  max-width: 520px;
+.eni-loader {
+  width: 64px;
+  height: 64px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background:
+    conic-gradient(from 0deg, #2563eb, #14b8a6, #f59e0b, #2563eb);
+  animation: eni-spin 1s linear infinite;
+}
+
+.eni-loader::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.eni-loader span {
+  width: 16px;
+  height: 16px;
+  position: relative;
+  z-index: 1;
+  border-radius: 50%;
+  background: #2563eb;
+  box-shadow: 0 0 0 8px rgba(37, 99, 235, 0.12);
+  animation: eni-pulse 1.1s ease-in-out infinite;
+}
+
+.eni-loading-copy {
+  display: grid;
+  gap: 6px;
+}
+
+.eni-loading-copy strong {
+  color: var(--text);
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+.eni-loading-copy p {
   margin: 0;
   color: var(--muted);
+  line-height: 1.6;
 }
 
-.eni-primary-link {
-  min-height: 42px;
-  padding: 0 16px;
-  border-color: var(--primary);
-  background: var(--primary);
-  color: #fff;
+.eni-loading-bar {
+  width: 100%;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e2e8f0;
 }
 
-.eni-primary-link:hover {
-  background: #1d4ed8;
+.eni-loading-bar span {
+  display: block;
+  width: 42%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #2563eb, #14b8a6, #f59e0b);
+  animation: eni-slide 1.25s ease-in-out infinite;
+}
+
+@keyframes eni-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes eni-pulse {
+  50% {
+    transform: scale(0.72);
+    box-shadow: 0 0 0 14px rgba(20, 184, 166, 0.12);
+  }
+}
+
+@keyframes eni-slide {
+  0% {
+    transform: translateX(-120%);
+  }
+
+  100% {
+    transform: translateX(240%);
+  }
 }
 
 @media (max-width: 720px) {
@@ -269,6 +366,11 @@ onBeforeUnmount(() => {
   .eni-frame,
   .eni-frame-panel {
     min-height: calc(100vh - 198px);
+  }
+
+  .eni-loading-card {
+    width: min(340px, calc(100vw - 40px));
+    padding: 24px 18px;
   }
 }
 </style>

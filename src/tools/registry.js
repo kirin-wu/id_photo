@@ -1,6 +1,7 @@
 import A4ImageTool from "./a4-image/A4ImageTool.vue";
 import DeviceIdentifyTool from "./device-identify/DeviceIdentifyTool.vue";
 import EniHelperTool from "./eni-helper/EniHelperTool.vue";
+import GearRatioTool from "./gear-ratio/GearRatioTool.vue";
 import IdPhotoTool from "./id-photo/IdPhotoTool.vue";
 
 export const toolCategories = [];
@@ -24,6 +25,7 @@ export const tools = [
     category: "device",
     icon: "cpu",
     path: "/tools/device-identify",
+    aliases: ["/device-identify"],
     component: DeviceIdentifyTool,
   },
   {
@@ -47,6 +49,17 @@ export const tools = [
     path: "/tools/eni-helper",
     aliases: ["/eni-helper"],
     component: EniHelperTool,
+  },
+  {
+    id: "gear-ratio",
+    title: "减速比计算",
+    navLabel: "减速比计算",
+    description: "按原始减速比、显示角度和实测角度计算机器人关节实际减速比。",
+    category: "robot",
+    icon: "calculator",
+    path: "/tools/gear-ratio",
+    aliases: ["/gear-ratio"],
+    component: GearRatioTool,
   },
 ];
 
