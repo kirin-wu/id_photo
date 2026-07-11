@@ -28,11 +28,11 @@
               {{ resource.processing ? "处理中" : resource.image ? "已就绪" : "未选择" }}
             </span>
           </div>
-          <label :for="resource.key" :class="['file-picker', { disabled: resource.processing }]">
+          <button type="button" :class="['file-picker', { disabled: resource.processing }]" :disabled="resource.processing" @click="openFilePicker(resource.key)">
             <LoaderCircle v-if="resource.processing" :size="16" class="spinner" />
             <Upload v-else :size="16" />
             <span>{{ resource.processing ? "正在处理..." : resource.image ? "更换图片" : "选择图片" }}</span>
-          </label>
+          </button>
           <input :id="resource.key" class="native-file-input" type="file" accept="image/*" :disabled="resource.processing" @change="selectImage($event, resource)">
           <div v-if="resource.image" class="image-preview">
             <img :src="resource.image.previewUrl" :alt="resource.label + '预览'">
@@ -60,6 +60,13 @@
             </label>
           </div>
           <div v-if="infoEnabled" class="info-editor">
+            <div class="info-actions">
+              <button type="button" class="info-import" @click="openFilePicker('info-file-picker')">
+                <FileUp :size="15" /> 导入 Info.txt
+              </button>
+              <input id="info-file-picker" class="native-file-input" type="file" accept=".txt,text/plain" @change="importInfoFile">
+              <span>也可直接填写下方内容</span>
+            </div>
             <div v-for="(_, index) in infoLines" :key="index" class="info-line">
               <span class="line-number">{{ index + 1 }}</span>
               <input v-model="infoLines[index]" :aria-label="`第 ${index + 1} 行文字`" type="text" :placeholder="`第 ${index + 1} 行文字`">
@@ -90,7 +97,7 @@
 
 <script setup>
 import { computed, reactive, ref } from "vue";
-import { Download, FileText, Image, LoaderCircle, Package, QrCode, Trash2, Upload } from "lucide-vue-next";
+import { Download, FileText, FileUp, Image, LoaderCircle, Package, QrCode, Trash2, Upload } from "lucide-vue-next";
 
 const imageResources = reactive([
   { key: "logo", label: "Logo", filename: "Logo.png", size: "145 x 60 像素", width: 145, height: 60, icon: Image, image: null, processing: false },
@@ -114,6 +121,10 @@ const packageFiles = computed(() => {
 });
 
 const hasResources = computed(() => packageFiles.value.length > 0);
+
+function openFilePicker(id) {
+  document.getElementById(id)?.click();
+}
 
 async function selectImage(event, resource) {
   const file = event.target.files?.[0];
@@ -143,6 +154,40 @@ async function selectImage(event, resource) {
     if (remainingDelay > 0) await new Promise((resolve) => window.setTimeout(resolve, remainingDelay));
     if (sourceUrl) URL.revokeObjectURL(sourceUrl);
     resource.processing = false;
+  }
+}
+
+async function importInfoFile(event) {
+  const file = event.target.files?.[0];
+  event.target.value = "";
+  if (!file) return;
+  errorMessage.value = "";
+  successMessage.value = "";
+  try {
+    const lines = (await file.text()).replace(/^\uFEFF/, "").replace(/\r\n?/g, "\n").split("\n");
+    if (lines.length === 10 && lines[9] === "") lines.pop();
+    if (lines.length !== 9) throw new Error("line count");
+    const nextLines = [];
+    const nextAlignments = [];
+    let nextEdLine = null;
+    lines.forEach((rawLine, index) => {
+      let line = rawLine;
+      const alignment = line.match(/^\[(LE|MI)\]/);
+      nextAlignments.push(alignment?.[1] ?? "LE");
+      if (alignment) line = line.slice(alignment[0].length);
+      if (line.startsWith("[ED]")) {
+        nextEdLine = index;
+        line = line.slice(4);
+      }
+      nextLines.push(line);
+    });
+    infoLines.value = nextLines;
+    alignments.value = nextAlignments;
+    edLine.value = nextEdLine;
+    infoEnabled.value = true;
+    successMessage.value = "已导入 Info.txt。";
+  } catch {
+    errorMessage.value = "Info.txt 必须为 UTF-8 编码且恰好包含 9 行。";
   }
 }
 
@@ -293,13 +338,13 @@ h1, h2, p { margin-top: 0; } .background-header h1 { margin: 5px 0 6px; font-siz
 .resource-card { display: flex; gap: 13px; min-width: 0; padding: 17px; } .resource-icon { width: 38px; height: 38px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 6px; background: #eaf2ff; color: #2563eb; }
 .resource-content { min-width: 0; flex: 1; } .resource-heading { display: flex; justify-content: space-between; gap: 10px; } .resource-heading h2, .package-summary h2 { margin-bottom: 3px; font-size: 16px; } .resource-heading p { font-size: 12px; }
 .status { height: 22px; padding: 2px 7px; border-radius: 4px; font-size: 12px; white-space: nowrap; } .status.empty { background: #f1f5f9; color: #64748b; } .status.ready { background: #dcfce7; color: #15803d; } .status.processing { background: #dbeafe; color: #1d4ed8; }
-.file-picker { width: max-content; min-height: 34px; display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; padding: 0 10px; border: 1px solid #cbd5e1; border-radius: 6px; color: #334155; cursor: pointer; font-weight: 700; } .file-picker.disabled { cursor: wait; opacity: .68; } .spinner { animation: spin .75s linear infinite; } .native-file-input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.file-picker, .info-import { width: max-content; min-height: 34px; display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; padding: 0 10px; border: 1px solid #cbd5e1; border-radius: 6px; background: #fff; color: #334155; cursor: pointer; font-weight: 700; } .file-picker.disabled { cursor: wait; opacity: .68; } .spinner { animation: spin .75s linear infinite; } .native-file-input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 .image-preview { display: grid; grid-template-columns: 100px 1fr; gap: 10px; min-height: 76px; margin-top: 12px; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; background: #f8fafc; } .image-preview img { width: 100px; height: 58px; display: block; object-fit: contain; background: #fff; } .preview-meta { min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 8px; color: #475569; font-size: 12px; } .preview-meta span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .icon-button { width: 32px; height: 32px; display: grid; place-items: center; flex: 0 0 auto; border: 1px solid #fecaca; border-radius: 5px; background: #fff; color: #dc2626; cursor: pointer; }
 .toggle-label { display: inline-flex; align-items: center; gap: 6px; color: #334155; font-size: 12px; font-weight: 700; white-space: nowrap; } .toggle-label input, .ed-label input { accent-color: #2563eb; }
-.info-editor { display: grid; gap: 7px; margin-top: 13px; } .info-line { display: grid; grid-template-columns: 22px minmax(0, 1fr) 76px auto; gap: 6px; align-items: center; } .line-number { color: #64748b; font-size: 12px; text-align: center; } .info-line input[type="text"], .info-line select { width: 100%; height: 31px; min-width: 0; padding: 4px 7px; border: 1px solid #cbd5e1; border-radius: 5px; background: #fff; color: var(--text); font-size: 12px; } .ed-label { display: inline-flex; align-items: center; gap: 3px; color: #475569; font-size: 11px; white-space: nowrap; }
+.info-editor { display: grid; gap: 7px; margin-top: 13px; } .info-actions { display: flex; align-items: center; gap: 9px; margin-bottom: 3px; color: var(--muted); font-size: 12px; } .info-import { min-height: 30px; margin-top: 0; font-size: 12px; } .info-line { display: grid; grid-template-columns: 22px minmax(0, 1fr) 76px auto; gap: 6px; align-items: center; } .line-number { color: #64748b; font-size: 12px; text-align: center; } .info-line input[type="text"], .info-line select { width: 100%; height: 31px; min-width: 0; padding: 4px 7px; border: 1px solid #cbd5e1; border-radius: 5px; background: #fff; color: var(--text); font-size: 12px; } .ed-label { display: inline-flex; align-items: center; gap: 3px; color: #475569; font-size: 11px; white-space: nowrap; }
 .package-summary { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 16px 18px; } .package-summary p { font-size: 13px; } .file-count { padding: 4px 8px; border-radius: 4px; background: #eaf2ff; color: #2563eb; font-weight: 700; font-size: 12px; white-space: nowrap; }
 @media (max-width: 760px) { .background-header { align-items: stretch; flex-direction: column; } .download-button { width: 100%; } .resource-grid { grid-template-columns: 1fr; } .package-summary { align-items: flex-start; flex-direction: column; } }
-@media (max-width: 430px) { .resource-card { padding: 13px; } .resource-icon { display: none; } .info-line { grid-template-columns: 20px minmax(0, 1fr) 66px; } .ed-label { grid-column: 2 / -1; } }
+@media (max-width: 430px) { .resource-card { padding: 13px; } .resource-icon { display: none; } .info-actions { align-items: flex-start; flex-direction: column; gap: 5px; } .info-line { grid-template-columns: 20px minmax(0, 1fr) 66px; } .ed-label { grid-column: 2 / -1; } }
 @keyframes spin { to { transform: rotate(360deg); } }
 </style>
