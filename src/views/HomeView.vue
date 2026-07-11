@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-import { Binary, Calculator, Camera, Cpu, Images, Search } from "lucide-vue-next";
+import { Binary, Calculator, Camera, Cpu, Images, Package, Search } from "lucide-vue-next";
 
 const iconMap = {
   binary: Binary,
@@ -29,6 +29,7 @@ const iconMap = {
   camera: Camera,
   cpu: Cpu,
   images: Images,
+  package: Package,
   search: Search,
 };
 

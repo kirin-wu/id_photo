@@ -4,10 +4,22 @@ import DeviceIdentifyTool from "./device-identify/DeviceIdentifyTool.vue";
 import EniHelperTool from "./eni-helper/EniHelperTool.vue";
 import GearRatioTool from "./gear-ratio/GearRatioTool.vue";
 import IdPhotoTool from "./id-photo/IdPhotoTool.vue";
+import BackgroundPackageTool from "./background-package/BackgroundPackageTool.vue";
 
 export const toolCategories = [];
 
 export const tools = [
+  {
+    id: "background-package",
+    title: "背景资源打包",
+    navLabel: "背景资源打包",
+    description: "转换 Logo、开机图、升级背景、关于信息和二维码，并打包成 QR.zip。",
+    category: "image",
+    icon: "package",
+    path: "/tools/background-package",
+    aliases: ["/background-package"],
+    component: BackgroundPackageTool,
+  },
   {
     id: "id-photo",
     title: "证件照",
