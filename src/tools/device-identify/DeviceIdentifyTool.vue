@@ -849,7 +849,12 @@ const generatedJson = computed(() => {
     }
   }
 
-  return JSON.stringify({ servo, gpio, version: "1.0.0" }, null, 2);
+  const slaveTypeLib = { servo, version: "1.0.0" };
+  if (Object.keys(gpio).length > 0) {
+    slaveTypeLib.gpio = gpio;
+  }
+
+  return JSON.stringify(slaveTypeLib, null, 2);
 });
 
 function downloadJson() {
