@@ -10,7 +10,7 @@
 
     <HomeView
       v-if="!activeTool"
-      :tools="tools"
+      :tools="visibleTools"
       :categories="toolCategories"
       @navigate="go"
     />
@@ -26,18 +26,24 @@ import { findToolByPath, normalizePath, toolCategories, tools } from "./tools/re
 /* ---------- 路由 ---------- */
 
 const currentPath = ref(normalizePath(window.location.pathname));
+const currentSearch = ref(window.location.search);
 const activeTool = computed(() => findToolByPath(currentPath.value));
+const showMore = computed(() => new URLSearchParams(currentSearch.value).get("type") === "more");
+const visibleTools = computed(() => tools.filter((tool) => tool.visibility !== "more" || showMore.value));
 
 function syncPath() {
   currentPath.value = normalizePath(window.location.pathname);
+  currentSearch.value = window.location.search;
 }
 
 function go(pathname) {
   const nextPath = normalizePath(pathname);
-  if (normalizePath(window.location.pathname) !== nextPath) {
-    window.history.pushState({}, "", nextPath);
+  const nextSearch = nextPath === "/" && showMore.value ? "?type=more" : "";
+  if (`${normalizePath(window.location.pathname)}${window.location.search}` !== `${nextPath}${nextSearch}`) {
+    window.history.pushState({}, "", `${nextPath}${nextSearch}`);
   }
   currentPath.value = nextPath;
+  currentSearch.value = nextSearch;
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
