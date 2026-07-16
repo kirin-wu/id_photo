@@ -22,12 +22,19 @@
           <div class="resource-heading">
             <div>
               <h2>{{ resource.label }}</h2>
-              <p>{{ resource.filename }} · {{ resource.size }} · PNG</p>
+              <p>{{ resourceFilename(resource) }} · {{ resource.size }} · PNG</p>
             </div>
             <span :class="['status', resource.processing ? 'processing' : resource.image ? 'ready' : 'empty']">
               {{ resource.processing ? "处理中" : resource.image ? "已就绪" : "未选择" }}
             </span>
           </div>
+          <label v-if="resource.key === 'updating'" class="model-selector">
+            <span>适用版本</span>
+            <select v-model="updatingController">
+              <option value="2207">2207</option>
+              <option value="2403">2403</option>
+            </select>
+          </label>
           <button type="button" :class="['file-picker', { disabled: resource.processing }]" :disabled="resource.processing" @click="openFilePicker(resource.key)">
             <LoaderCircle v-if="resource.processing" :size="16" class="spinner" />
             <Upload v-else :size="16" />
@@ -116,9 +123,15 @@ const infoPasteText = ref("");
 const errorMessage = ref("");
 const successMessage = ref("");
 const exporting = ref(false);
+const updatingController = ref("2403");
+
+function resourceFilename(resource) {
+  if (resource.key !== "updating") return resource.filename;
+  return updatingController.value === "2207" ? "SoftUpdatingBackground.png" : "SoftwareUpdatingBackground.png";
+}
 
 const packageFiles = computed(() => {
-  const files = imageResources.filter((item) => item.image).map((item) => item.filename);
+  const files = imageResources.filter((item) => item.image).map(resourceFilename);
   if (infoEnabled.value) files.push("Info.txt");
   return files;
 });
@@ -252,7 +265,7 @@ async function downloadPackage() {
   try {
     const entries = [];
     for (const resource of imageResources) {
-      if (resource.image) entries.push({ name: resource.filename, data: new Uint8Array(await resource.image.blob.arrayBuffer()) });
+      if (resource.image) entries.push({ name: resourceFilename(resource), data: new Uint8Array(await resource.image.blob.arrayBuffer()) });
     }
     if (infoEnabled.value) entries.push({ name: "Info.txt", data: new TextEncoder().encode(buildInfoText()) });
     const archive = createZip(entries);
@@ -345,6 +358,7 @@ h1, h2, p { margin-top: 0; } .background-header h1 { margin: 5px 0 6px; font-siz
 .resource-content { min-width: 0; flex: 1; } .resource-heading { display: flex; justify-content: space-between; gap: 10px; } .resource-heading h2, .package-summary h2 { margin-bottom: 3px; font-size: 16px; } .resource-heading p { font-size: 12px; }
 .status { height: 22px; padding: 2px 7px; border-radius: 4px; font-size: 12px; white-space: nowrap; } .status.empty { background: #f1f5f9; color: #64748b; } .status.ready { background: #dcfce7; color: #15803d; } .status.processing { background: #dbeafe; color: #1d4ed8; }
 .file-picker { width: max-content; min-height: 34px; display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; padding: 0 10px; border: 1px solid #cbd5e1; border-radius: 6px; background: #fff; color: #334155; cursor: pointer; font-weight: 700; } .file-picker.disabled { cursor: wait; opacity: .68; } .spinner { animation: spin .75s linear infinite; } .native-file-input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.model-selector { display: inline-flex; align-items: center; gap: 7px; margin-top: 12px; color: #475569; font-size: 12px; font-weight: 700; } .model-selector select { height: 30px; padding: 3px 7px; border: 1px solid #cbd5e1; border-radius: 5px; background: #fff; color: var(--text); font: inherit; }
 .image-preview { display: grid; grid-template-columns: 100px 1fr; gap: 10px; min-height: 76px; margin-top: 12px; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; background: #f8fafc; } .image-preview img { width: 100px; height: 58px; display: block; object-fit: contain; background: #fff; } .preview-meta { min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 8px; color: #475569; font-size: 12px; } .preview-meta span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .icon-button { width: 32px; height: 32px; display: grid; place-items: center; flex: 0 0 auto; border: 1px solid #fecaca; border-radius: 5px; background: #fff; color: #dc2626; cursor: pointer; }
 .toggle-label { display: inline-flex; align-items: center; gap: 6px; color: #334155; font-size: 12px; font-weight: 700; white-space: nowrap; } .toggle-label input, .ed-label input { accent-color: #2563eb; }

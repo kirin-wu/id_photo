@@ -156,11 +156,11 @@
                         <el-form-item label="轴数 axisNum">
                           <el-input-number v-model="entry.axisNum" :min="1" controls-position="right" />
                         </el-form-item>
-                        <el-form-item label="编码器清除模式">
+                        <el-form-item label="编码器清零方式 clearEncodeMode">
                           <el-select v-model="entry.clearEncodeMode">
-                            <el-option :value="0" label="0 - 不清除" />
-                            <el-option :value="1" label="1 - 清除" />
-                            <el-option :value="2" label="2" />
+                            <el-option :value="0" label="0 - 不清零" />
+                            <el-option :value="1" label="1 - 德创的清零方式" />
+                            <el-option :value="2" label="2 - 新时达清零方式" />
                           </el-select>
                         </el-form-item>
                       </template>
@@ -449,7 +449,7 @@
                   失焦后会转为十进制。
                 </dd>
                 <dt>axisNum / clearEncodeMode</dt>
-                <dd>伺服轴数和编码器清除模式。</dd>
+                <dd>伺服轴数和编码器清零方式：0 不清零，1 德创的清零方式，2 新时达清零方式。</dd>
                 <dt>AI / AO / DI / DO</dt>
                 <dd>IO 板 PDO 配置，DI 常用 0x6000 段，DO 常用 0x7000 段。</dd>
               </dl>
