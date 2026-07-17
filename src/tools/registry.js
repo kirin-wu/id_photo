@@ -12,8 +12,8 @@ export const toolCategories = [];
 export const tools = [
   {
     id: "modbus-text",
-    title: "\u6a21\u62df\u5df4\u6c49\u5b57\u89e3\u6790",
-    navLabel: "\u6a21\u62df\u5df4\u6c49\u5b57\u89e3\u6790",
+    title: "modbus\u6c49\u5b57\u89e3\u6790",
+    navLabel: "modbus\u6c49\u5b57\u89e3\u6790",
     description: "\u89e3\u6790 Modbus TCP / RTU \u62a5\u6587\uff0c\u8f6c\u6362\u5b57\u8282\u5e8f\u5e76\u6309 UTF-8 \u6216 GBK \u89e3\u7801\u3002",
     category: "device",
     icon: "languages",
