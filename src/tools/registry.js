@@ -1,5 +1,6 @@
 import A4ImageTool from "./a4-image/A4ImageTool.vue";
 import BaseConverterTool from "./base-converter/BaseConverterTool.vue";
+import AngleConverterTool from "./angle-converter/AngleConverterTool.vue";
 import DeviceIdentifyTool from "./device-identify/DeviceIdentifyTool.vue";
 import EniHelperTool from "./eni-helper/EniHelperTool.vue";
 import GearRatioTool from "./gear-ratio/GearRatioTool.vue";
@@ -98,6 +99,17 @@ export const tools = [
     path: "/tools/base-converter",
     aliases: ["/base-converter"],
     component: BaseConverterTool,
+  },
+  {
+    id: "angle-converter",
+    title: "角度弧度换算",
+    navLabel: "角度弧度换算",
+    description: "支持角度与弧度的双向实时换算，提供常用数值快捷输入。",
+    category: "number",
+    icon: "gauge",
+    path: "/tools/angle-converter",
+    aliases: ["/angle-converter"],
+    component: AngleConverterTool,
   },
 ];
 

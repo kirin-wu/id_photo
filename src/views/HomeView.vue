@@ -21,13 +21,14 @@
 </template>
 
 <script setup>
-import { Binary, Calculator, Camera, Cpu, Images, Languages, Package, Search } from "lucide-vue-next";
+import { Binary, Calculator, Camera, Cpu, Gauge, Images, Languages, Package, Search } from "lucide-vue-next";
 
 const iconMap = {
   binary: Binary,
   calculator: Calculator,
   camera: Camera,
   cpu: Cpu,
+  gauge: Gauge,
   images: Images,
   languages: Languages,
   package: Package,
