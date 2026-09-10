@@ -78,7 +78,7 @@ import { ElMessage } from "element-plus";
 import { AlertCircle, AlertTriangle, Copy, FileText, Info, Languages, Network, RotateCcw } from "lucide-vue-next";
 
 const text = {
-  title: "\u6a21\u62df\u5df4\u6c49\u5b57\u89e3\u6790",
+  title: "Modbus \u6c49\u5b57\u89e3\u6790",
   subtitle: "\u63d0\u53d6\u5bc4\u5b58\u5668\u6570\u636e\u533a\uff0c\u8fd8\u539f\u5b57\u8282\u5e8f\u5e76\u89e3\u7801\u4e3a\u6c49\u5b57\u3002",
   example: "\u52a0\u8f7d\u793a\u4f8b",
   reset: "\u6e05\u7a7a",
