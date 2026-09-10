@@ -29,7 +29,7 @@
       </div>
       <div class="filter-bar">
         <div class="direction-filter" role="group" aria-label="按主站方向筛选">
-          <button v-for="option in filters" :key="option.value" type="button" :class="{ active: direction === option.value }" :aria-pressed="direction === option.value" @click="direction = option.value">
+          <button v-for="option in filters" :key="option.value" type="button" :class="{ active: direction === option.value }" :aria-pressed="direction === option.value" @click="setDirection(option.value)">
             {{ option.label }}
           </button>
         </div>
@@ -39,7 +39,7 @@
         <table>
           <thead><tr><th scope="col">索引</th><th scope="col">对象名称</th><th scope="col">主站方向</th><th scope="col">PDO 方向¹</th><th scope="col">含义 / 用途</th></tr></thead>
           <tbody>
-            <tr v-for="object in filteredObjects" :key="object.index">
+            <tr v-for="object in pagedObjects" :key="object.index">
               <td><code>{{ object.index }}</code></td>
               <td><strong>{{ object.name }}</strong><span class="english-name">{{ object.english }}</span></td>
               <td><span class="direction-badge" :class="object.direction">{{ object.direction === 'output' ? '主站输出' : '主站输入' }}</span></td>
@@ -50,6 +50,15 @@
           </tbody>
         </table>
       </div>
+      <nav v-if="totalPages > 1" class="pagination" aria-label="对象表分页">
+        <button class="page-button" type="button" title="上一页" aria-label="上一页" :disabled="currentPage === 1" @click="currentPage -= 1">
+          <ChevronLeft :size="18" />
+        </button>
+        <span>第 {{ currentPage }} / {{ totalPages }} 页</span>
+        <button class="page-button" type="button" title="下一页" aria-label="下一页" :disabled="currentPage === totalPages" @click="currentPage += 1">
+          <ChevronRight :size="18" />
+        </button>
+      </nav>
       <p class="table-note">¹ PDO 方向表示对象映射后的数据流向，不代表设备默认已映射或一定支持映射。索引使用十六进制表示。</p>
     </section>
 
@@ -66,11 +75,13 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
-import { ArrowRight, Network, Search } from "lucide-vue-next";
+import { computed, ref, watch } from "vue";
+import { ArrowRight, ChevronLeft, ChevronRight, Network, Search } from "lucide-vue-next";
 
 const query = ref("");
 const direction = ref("all");
+const currentPage = ref(1);
+const pageSize = 10;
 const filters = [
   { value: "all", label: "全部对象" },
   { value: "output", label: "主站输出 · RxPDO" },
@@ -97,6 +108,19 @@ const filteredObjects = computed(() => {
     return matchesDirection && keywords.every((keyword) => content.includes(keyword));
   });
 });
+const totalPages = computed(() => Math.max(1, Math.ceil(filteredObjects.value.length / pageSize)));
+const pagedObjects = computed(() => {
+  const start = (currentPage.value - 1) * pageSize;
+  return filteredObjects.value.slice(start, start + pageSize);
+});
+
+watch([query, direction], () => {
+  currentPage.value = 1;
+});
+
+function setDirection(value) {
+  direction.value = value;
+}
 </script>
 
 <style scoped>
@@ -138,6 +162,10 @@ td strong { font-weight: 600; }
 .direction-badge.output { background: #eff6ff; color: #1d4ed8; }
 .direction-badge.input { background: #ccfbf1; color: #115e59; }
 .empty-state { padding: 36px 18px; text-align: center; color: var(--muted); }
+.pagination { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 14px 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; font-weight: 700; }
+.page-button { width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 6px; background: #fff; color: var(--text); cursor: pointer; }
+.page-button:not(:disabled):hover { border-color: var(--primary); color: var(--primary); }
+.page-button:disabled { cursor: not-allowed; opacity: .45; }
 .table-note { margin: 0; padding: 14px 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
 .notes-panel { padding: 20px; }
 dl { display: grid; gap: 16px; margin: 18px 0 0; }
