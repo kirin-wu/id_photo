@@ -7,10 +7,22 @@ import GearRatioTool from "./gear-ratio/GearRatioTool.vue";
 import IdPhotoTool from "./id-photo/IdPhotoTool.vue";
 import BackgroundPackageTool from "./background-package/BackgroundPackageTool.vue";
 import ModbusTextTool from "./modbus-text/ModbusTextTool.vue";
+import EthercatReferenceTool from "./ethercat-reference/EthercatReferenceTool.vue";
 
 export const toolCategories = [];
 
 export const tools = [
+  {
+    id: "ethercat-reference",
+    title: "EtherCAT 常用对象速查",
+    navLabel: "EtherCAT 常用对象速查",
+    description: "查询 CiA 402 常用对象，快速区分主站输入、输出与 RxPDO / TxPDO。",
+    category: "device",
+    icon: "cpu",
+    path: "/tools/ethercat-reference",
+    aliases: ["/ethercat-reference"],
+    component: EthercatReferenceTool,
+  },
   {
     id: "modbus-text",
     title: "Modbus \u6c49\u5b57\u89e3\u6790",
