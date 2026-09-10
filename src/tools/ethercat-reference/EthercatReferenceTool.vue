@@ -50,6 +50,19 @@
           </tbody>
         </table>
       </div>
+      <ul v-if="pagedObjects.length" class="mobile-objects" aria-label="CiA 402 常用对象列表">
+        <li v-for="object in pagedObjects" :key="object.index" class="object-card">
+          <div class="object-card-heading">
+            <code>{{ object.index }}</code>
+            <span class="direction-badge" :class="object.direction">{{ object.direction === 'output' ? '主站输出' : '主站输入' }}</span>
+          </div>
+          <h3>{{ object.name }}</h3>
+          <span class="english-name">{{ object.english }}</span>
+          <p class="object-pdo">驱动器 PDO 方向¹：<strong>{{ object.pdo }}</strong></p>
+          <p class="object-description">{{ object.description }}</p>
+        </li>
+      </ul>
+      <p v-else class="mobile-objects empty-state">没有匹配的对象，请尝试其他索引、名称或方向。</p>
       <nav v-if="totalPages > 1" class="pagination" aria-label="对象表分页">
         <button class="page-button" type="button" title="上一页" aria-label="上一页" :disabled="currentPage === 1" @click="currentPage -= 1">
           <ChevronLeft :size="18" />
@@ -150,6 +163,7 @@ h2 { margin: 0; font-size: 17px; }
 .direction-filter button.active { background: #eff6ff; border-color: #93c5fd; color: #1d4ed8; font-weight: 700; }
 .result-count { color: var(--muted); font-size: 12px; }
 .table-scroll { overflow-x: auto; }
+.mobile-objects { display: none; }
 .table-scroll:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; }
 table { width: 100%; min-width: 800px; border-collapse: collapse; text-align: left; }
 th { padding: 12px 18px; background: #f8fafc; color: #475569; font-size: 12px; font-weight: 700; white-space: nowrap; }
@@ -171,14 +185,33 @@ td strong { font-weight: 600; }
 dl { display: grid; gap: 16px; margin: 18px 0 0; }
 dt { margin-bottom: 4px; font-weight: 700; }
 dd { margin: 0; color: var(--muted); line-height: 1.7; }
-@media (max-width: 640px) {
+@media (max-width: 760px) {
+  .ethercat-tool { gap: 12px; }
   .direction-cards { grid-template-columns: 1fr; gap: 12px; }
   .reference-header, .direction-card, .notes-panel { padding: 16px; }
   h1 { font-size: 21px; }
+  .reference-header p { font-size: 13px; }
+  .data-flow { margin: 12px 0 8px; gap: 8px; font-size: 15px; }
+  .data-flow svg, .search-field svg { flex-shrink: 0; }
+  .direction-card p:last-child { margin-top: 0; }
   .table-toolbar { align-items: stretch; flex-direction: column; padding: 16px 16px 12px; }
   .search-field { width: 100%; }
+  .search-field input { min-height: 44px; font-size: 16px; }
   .filter-bar { padding: 0 16px 14px; }
-  .direction-filter button { padding: 7px 9px; font-size: 12px; }
+  .direction-filter { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; }
+  .direction-filter button { min-height: 44px; padding: 8px 4px; font-size: 12px; }
+  .direction-filter button:first-child { grid-column: 1 / -1; }
+  .table-scroll { display: none; }
+  .mobile-objects { display: grid; gap: 12px; margin: 0; padding: 0 16px 16px; list-style: none; }
+  .object-card { min-width: 0; padding: 14px; border: 1px solid var(--line); border-radius: 8px; overflow-wrap: anywhere; }
+  .object-card-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .object-card h3 { margin: 10px 0 0; font-size: 16px; }
+  .object-pdo { margin: 12px 0 6px; color: var(--muted); font-size: 12px; }
+  .object-pdo strong { color: var(--text); font-weight: 600; }
+  .object-description { margin: 0; line-height: 1.7; }
+  .mobile-objects.empty-state { padding: 24px 16px; }
+  .pagination { gap: 20px; padding: 12px 16px; }
+  .page-button { width: 44px; height: 44px; }
   .table-note { padding: 14px 16px; }
 }
 </style>

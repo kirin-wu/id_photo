@@ -115,6 +115,17 @@ onBeforeUnmount(() => {
   .tool-topbar {
     flex-wrap: wrap;
     gap: 8px;
+    height: auto;
+    min-height: 64px;
+  }
+
+  .back-btn {
+    min-height: 44px;
+  }
+
+  .tool-title {
+    min-width: 0;
+    overflow-wrap: anywhere;
   }
 }
 </style>
